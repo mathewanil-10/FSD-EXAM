@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voyage — Discover What's Nearby</title>
+  <meta name="description" content="Discover nearby hospitals, pharmacies, ATMs and public toilets with Voyage.">
+  <meta name="theme-color" content="#111915">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Custom Dark Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+  <!-- ======================================================================
+       SECTION 1: HERO & LOGIN LANDING SCREEN (With picture background)
+       ====================================================================== -->
+  <section id="hero-login-section" class="hero-login-wrapper" aria-label="Welcome and traveler sign in">
+    <!-- Dark photo background overlay -->
+    <div class="hero-bg-media">
+      <img 
+        src="assets/hero-travel.jpg" 
+        onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1600&q=80'" 
+        alt="Atmospheric European city street" 
+        class="hero-bg-img"
+      />
+      <div class="hero-dark-overlay"></div>
+    </div>
+
+    <!-- Hero Top Navigation -->
+    <header class="hero-nav">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <i class="fa-solid fa-location-arrow"></i>
+        </div>
+        <span class="brand-name">Voyage</span>
+        <span class="brand-tagline">Discover What's Nearby</span>
+      </div>
+
+      <div class="hero-nav-actions">
+        <div class="header-status">
+          <span class="status-dot"></span>
+          <span>OpenStreetMap Live</span>
+        </div>
+        <button type="button" class="btn-jump-map" id="btn-jump-to-map">
+          <span>Explore Map</span>
+          <i class="fa-solid fa-arrow-down"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Hero Content Stage (Split layout: Story on left, Login card on right) -->
+    <div class="hero-stage-container">
+      
+      <!-- Left: Catchy Editorial Introduction -->
+      <div class="hero-story-card">
+        <div class="hero-pill-badge">
+          <i class="fa-solid fa-compass"></i>
+          <span>Global Location Discovery</span>
+        </div>
+        <h1 class="hero-headline">
+          Find what’s around you, <br class="hidden sm:inline">anywhere in the world.
+        </h1>
+        <p class="hero-lead">
+          Voyage connects tourists and travelers to real-time verified essential services: Hospitals, Pharmacies, ATMs, and Public Toilets powered by live OpenStreetMap geographic data.
+        </p>
+
+        <!-- Feature bullet highlights -->
+        <ul class="hero-features-list">
+          <li>
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Real-time live OSM data across any global city</span>
+          </li>
+          <li>
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Pinpoint walking distances &amp; direct routing navigation</span>
+          </li>
+          <li>
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Smart location disambiguation &amp; GPS tracking</span>
+          </li>
+        </ul>
+
+        <div class="hero-cta-action">
+          <button type="button" class="btn-scroll-action" id="btn-hero-scroll">
+            <span>Scroll down to search &amp; map</span>
+            <i class="fa-solid fa-chevron-down bounce-icon"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right: Sleek Dark Glassmorphic Quick Discovery Launcher Card -->
+      <div class="login-card-container">
+        <div class="login-glass-card">
+          <div class="login-card-header">
+            <div class="login-icon-box">
+              <i class="fa-solid fa-compass"></i>
+            </div>
+            <div>
+              <h2 class="login-title">Quick Discovery</h2>
+              <p class="login-subtitle">Explore verified essentials in any city</p>
+            </div>
+          </div>
+
+          <form id="hero-quick-search-form" class="login-form-inner">
+            <div class="login-field-group">
+              <label for="hero-location-input" class="login-field-label">Destination or City</label>
+              <div class="login-input-wrap">
+                <i class="fa-solid fa-magnifying-glass login-input-icon"></i>
+                <input 
+                  type="text" 
+                  id="hero-location-input" 
+                  placeholder="e.g. Florence, Paris, Bengaluru..." 
+                  autocomplete="off" 
+                  class="login-input"
+                />
+              </div>
+            </div>
+
+            <button type="submit" id="btn-hero-search-submit" class="btn-login-primary">
+              <i class="fa-solid fa-magnifying-glass-location"></i>
+              <span>Search &amp; Explore Map</span>
+            </button>
+
+            <div class="login-divider">
+              <span>or jump to travel hubs</span>
+            </div>
+
+            <div class="hero-quick-chips">
+              <button type="button" class="hero-chip-btn" data-city="Florence, Italy">
+                📍 Florence
+              </button>
+              <button type="button" class="hero-chip-btn" data-city="Paris, France">
+                📍 Paris
+              </button>
+              <button type="button" class="hero-chip-btn" data-city="London, UK">
+                📍 London
+              </button>
+              <button type="button" class="hero-chip-btn" data-city="Rome, Italy">
+                📍 Rome
+              </button>
+              <button type="button" class="hero-chip-btn" data-city="Bengaluru, India">
+                📍 Bengaluru
+              </button>
+              <button type="button" class="hero-chip-btn" data-city="Tokyo, Japan">
+                📍 Tokyo
+              </button>
+            </div>
+
+            <button type="button" id="btn-guest-explore" class="btn-login-guest">
+              <i class="fa-solid fa-map"></i>
+              <span>Open Map Directly</span>
+            </button>
+          </form>
+
+          <div class="login-card-footer">
+            <span class="demo-tag">Live OSM Geodata:</span> Hospitals • Pharmacies • ATMs • Public Toilets
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Floating bottom scroll teaser -->
+    <div class="hero-scroll-teaser" id="teaser-scroll">
+      <a href="#app-workspace" class="teaser-link">
+        <span>Scroll to Discovery Map</span>
+        <i class="fa-solid fa-chevron-down"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       SECTION 2: MAP & DISCOVERY WORKSPACE (When you scroll down)
+       ====================================================================== -->
+  <div id="app-workspace" class="workspace-section" aria-label="Interactive Discovery Workspace">
+    
+    <!-- Workspace Top Bar -->
+    <header class="workspace-topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <i class="fa-solid fa-location-arrow"></i>
+        </div>
+        <h2 class="brand-name">Voyage</h2>
+        <span class="brand-tagline">Discover What's Nearby</span>
+      </div>
+
+      <div class="workspace-header-actions">
+        <a href="#hero-login-section" class="btn-back-top" title="Back to top">
+          <i class="fa-solid fa-arrow-up"></i>
+          <span class="hidden sm:inline">Back to Top</span>
+        </a>
+
+        <div class="header-status">
+          <span class="status-dot"></span>
+          <span class="hidden sm:inline">OpenStreetMap</span>
+        </div>
+
+        <div class="mobile-tabs" aria-label="Mobile view">
+          <button id="tab-btn-list" class="active" type="button">List</button>
+          <button id="tab-btn-map" type="button">Map</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Workspace Main Body -->
+    <main class="workspace">
+      
+      <!-- ------------------------------------------------------------------
+           Search & Results Sidebar
+           ------------------------------------------------------------------ -->
+      <section id="sidebar-panel" class="sidebar" aria-label="Location search and results">
+        
+        <!-- Search Controls -->
+        <div class="search-section">
+          <p class="eyebrow">Location discovery</p>
+          <h3 class="search-title">Find places around you.</h3>
+
+          <form id="search-form">
+            <div class="search-row">
+              <div class="input-wrap">
+                <i class="fa-solid fa-magnifying-glass input-icon" aria-hidden="true"></i>
+                <input 
+                  id="location-input" 
+                  type="text" 
+                  placeholder="City, neighbourhood, or landmark" 
+                  autocomplete="off"
+                  aria-label="Search for a location"
+                >
+                <button id="btn-clear-input" type="button" class="hidden" title="Clear search" aria-label="Clear search">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+
+              <button id="btn-locate-me" type="button" title="Use GPS location" aria-label="Use GPS location">
+                <i class="fa-solid fa-crosshairs"></i>
+              </button>
+
+              <button id="search-button" type="submit">
+                <span>Search</span>
+              </button>
+            </div>
+
+            <div id="input-feedback" class="hidden" role="alert">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              <span></span>
+            </div>
+
+            <div class="radius-row">
+              <label class="radius-control" for="radius-select">
+                <span>Search radius</span>
+                <select id="radius-select" aria-label="Search radius">
+                  <!-- Dynamically populated from CONFIG -->
+                </select>
+              </label>
+              <span>Live geodata</span>
+            </div>
+          </form>
+        </div>
+
+        <!-- Category Selector -->
+        <div class="category-section">
+          <div class="section-heading">
+            <h4>Explore categories</h4>
+            <span>Select one</span>
+          </div>
+          <div id="category-buttons-container">
+            <!-- Dynamically populated via js/ui.js -->
+          </div>
+        </div>
+
+        <!-- Results Section Header -->
+        <div class="results-heading">
+          <div>
+            <h4>Nearby places</h4>
+            <p>Explore essential services in your selected area</p>
+          </div>
+        </div>
+
+        <!-- Dynamic Results List Container -->
+        <div id="results-container" aria-live="polite">
+          <!-- Dynamically populated via js/ui.js -->
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+          Map &amp; facility data verified through OpenStreetMap community services.
+        </div>
+      </section>
+
+      <!-- ------------------------------------------------------------------
+           Interactive Map Panel
+           ------------------------------------------------------------------ -->
+      <section id="map-panel" class="map-panel" aria-label="Interactive map">
+        <div id="map"></div>
+
+        <div class="map-caption">
+          <i class="fa-solid fa-location-dot"></i>
+          <span>Click anywhere on the map to search nearby amenities</span>
+        </div>
+
+        <div class="map-legend">
+          <h5>Facility types</h5>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#f87171"></span>
+            <span>Hospitals</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#34d399"></span>
+            <span>Pharmacies</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#60a5fa"></span>
+            <span>ATMs &amp; banks</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#e5a95d"></span>
+            <span>Public toilets</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed-toast-box"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Application Modules -->
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Login & Smooth Scroll Integration Script -->
+  <script>
+    (() => {
+      // Smooth scrolling helper
+      const scrollToWorkspace = () => {
+        const workspace = document.getElementById('app-workspace');
+        if (workspace) {
+          workspace.scrollIntoView({ behavior: 'smooth' });
+          setTimeout(() => {
+            if (window.MapService && window.MapService.map) {
+              window.MapService.map.invalidateSize();
+            }
+          }, 400);
+        }
+      };
+
+      // Hero navigation jump buttons
+      const btnJump = document.getElementById('btn-jump-to-map');
+      if (btnJump) btnJump.addEventListener('click', scrollToWorkspace);
+
+      const btnHeroScroll = document.getElementById('btn-hero-scroll');
+      if (btnHeroScroll) btnHeroScroll.addEventListener('click', scrollToWorkspace);
+
+      const btnGuest = document.getElementById('btn-guest-explore');
+      if (btnGuest) btnGuest.addEventListener('click', () => {
+        if (window.UiService) {
+          window.UiService.showToast("Welcome! Exploring in guest mode.", "info");
+        }
+        scrollToWorkspace();
+      });
+
+      // Hero quick search form submission
+      const heroSearchForm = document.getElementById('hero-quick-search-form');
+      if (heroSearchForm) {
+        heroSearchForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const heroInput = document.getElementById('hero-location-input');
+          const query = heroInput ? heroInput.value.trim() : '';
+          const workspaceInput = document.getElementById('location-input');
+          if (query && workspaceInput) {
+            workspaceInput.value = query;
+          }
+          scrollToWorkspace();
+          if (query && window.App && window.App.handleSearchSubmit) {
+            setTimeout(() => window.App.handleSearchSubmit(), 450);
+          }
+        });
+      }
+
+      // Hero quick destination chips
+      document.querySelectorAll('.hero-chip-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const city = btn.dataset.city;
+          const workspaceInput = document.getElementById('location-input');
+          if (city && workspaceInput) {
+            workspaceInput.value = city;
+          }
+          scrollToWorkspace();
+          if (city && window.App && window.App.handleSearchSubmit) {
+            setTimeout(() => window.App.handleSearchSubmit(), 450);
+          }
+        });
+      });
+
+      // Invalidate map on scroll into view
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && window.MapService && window.MapService.map) {
+            window.MapService.map.invalidateSize();
+          }
+        });
+      }, { threshold: 0.1 });
+
+      const workspaceElem = document.getElementById('app-workspace');
+      if (workspaceElem) observer.observe(workspaceElem);
+
+      // Mobile list/map toggle
+      const listButton = document.getElementById('tab-btn-list');
+      const mapButton = document.getElementById('tab-btn-map');
+
+      if (listButton && mapButton) {
+        listButton.addEventListener('click', () => {
+          document.body.classList.remove('show-map');
+          listButton.classList.add('active');
+          mapButton.classList.remove('active');
+          window.dispatchEvent(new Event('resize'));
+        });
+
+        mapButton.addEventListener('click', () => {
+          document.body.classList.add('show-map');
+          mapButton.classList.add('active');
+          listButton.classList.remove('active');
+          window.dispatchEvent(new Event('resize'));
+          if (window.MapService && window.MapService.map) {
+            setTimeout(() => window.MapService.map.invalidateSize(), 150);
+          }
+        });
+      }
+    })();
+  </script>
+
+</body>
+</html>
